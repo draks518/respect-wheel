@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ server_name }} - Respect Games</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Noto+Sans+Arabic:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
+            background: #08080f;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image:
+                linear-gradient(rgba(125, 91, 250, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(125, 91, 250, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+            animation: orbFloat 8s ease-in-out infinite alternate;
+        }
+        .bg-orb.purple { width: 400px; height: 400px; background: rgba(125, 91, 250, 0.12); top: -100px; left: -100px; }
+        .bg-orb.gold { width: 300px; height: 300px; background: rgba(245, 158, 11, 0.08); bottom: -50px; right: -50px; animation-delay: -4s; }
+        .bg-orb.blue { width: 350px; height: 350px; background: rgba(59, 130, 246, 0.06); top: 50%; left: 50%; animation-delay: -2s; }
+        @keyframes orbFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, -30px) scale(1.1); }
+        }
+
+        .container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .logo-img {
+            width: 46px; height: 46px; border-radius: 14px;
+            position: relative;
+        }
+        .logo-img img { width: 100%; height: 100%; border-radius: 14px; }
+        .logo-img::after {
+            content: '';
+            position: absolute; inset: -2px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #7D5BFA, #F59E0B);
+            z-index: -1;
+            opacity: 0.6;
+        }
+        .logo h1 {
+            font-size: 1.4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #7D5BFA, #F59E0B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+        nav { display: flex; gap: 6px; }
+        nav a {
+            color: #666;
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        nav a:hover { color: #fff; background: rgba(125, 91, 250, 0.1); }
+        nav a.active { color: #fff; background: rgba(125, 91, 250, 0.15); position: relative; }
+        nav a.active::before {
+            content: '';
+            position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+            width: 20px; height: 3px; border-radius: 2px;
+            background: #7D5BFA;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 70px 20px 50px;
+            position: relative;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(125, 91, 250, 0.1);
+            border: 1px solid rgba(125, 91, 250, 0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #7D5BFA;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .hero h2 {
+            font-size: 3.2rem;
+            font-weight: 900;
+            margin-bottom: 12px;
+            line-height: 1.2;
+            letter-spacing: -1px;
+        }
+        .hero h2 .gradient {
+            background: linear-gradient(135deg, #7D5BFA, #A78BFA, #F59E0B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% 200%;
+            animation: gradShift 4s ease-in-out infinite alternate;
+        }
+        @keyframes gradShift { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+        .hero p {
+            color: #666;
+            font-size: 1.15rem;
+            max-width: 550px;
+            margin: 0 auto 35px;
+            line-height: 1.7;
+        }
+        .hero-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            padding: 13px 32px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Cairo', sans-serif;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.1));
+            pointer-events: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #7D5BFA, #6a4ae0);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(125, 91, 250, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(125, 91, 250, 0.4);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: #1a1a2e;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.25);
+        }
+        .btn-gold:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.35);
+        }
+        .btn-glass {
+            background: rgba(255,255,255,0.05);
+            color: #ccc;
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+        }
+        .btn-glass:hover { background: rgba(255,255,255,0.1); color: #fff; transform: translateY(-3px); }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 45px 0;
+        }
+        .stat-glass {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px;
+            padding: 28px 20px;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-glass::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #7D5BFA, transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .stat-glass:hover::before { opacity: 1; }
+        .stat-glass:hover {
+            border-color: rgba(125, 91, 250, 0.2);
+            transform: translateY(-5px);
+            background: rgba(125, 91, 250, 0.05);
+        }
+        .stat-glass .icon { font-size: 2rem; margin-bottom: 8px; }
+        .stat-glass .value {
+            font-size: 2.4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, #A78BFA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-glass .label { color: #555; font-size: 0.95rem; margin-top: 4px; font-weight: 600; }
+
+        /* Section Title */
+        .section-header {
+            text-align: center;
+            margin: 55px 0 25px;
+        }
+        .section-header .tag {
+            display: inline-flex;
+            padding: 4px 14px;
+            border-radius: 10px;
+            background: rgba(125, 91, 250, 0.08);
+            color: #7D5BFA;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .section-header h3 {
+            font-size: 2rem;
+            font-weight: 900;
+        }
+        .section-header h3 span { color: #F59E0B; }
+        .section-header p { color: #555; font-size: 0.95rem; margin-top: 6px; }
+
+        /* Top Players */
+        .players-grid {
+            display: grid;
+            gap: 10px;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        .player-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 14px;
+            padding: 10px 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .player-card::after {
+            content: '';
+            position: absolute; left: 0; top: 0; bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #7D5BFA, #F59E0B);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .player-card:hover::after { opacity: 1; }
+        .player-card:hover {
+            border-color: rgba(125, 91, 250, 0.15);
+            background: rgba(125, 91, 250, 0.04);
+            transform: translateX(-5px);
+        }
+        .player-rank {
+            font-size: 1.1rem;
+            font-weight: 900;
+            min-width: 30px;
+            text-align: center;
+        }
+        .player-rank.gold { color: #F59E0B; font-size: 1.3rem; }
+        .player-rank.silver { color: #94a3b8; font-size: 1.2rem; }
+        .player-rank.bronze { color: #CD7F32; font-size: 1.1rem; }
+        .player-avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .player-avatar img {
+            width: 100%; height: 100%; border-radius: 50%;
+        }
+        .player-avatar.glow-1::after, .player-avatar.glow-2::after, .player-avatar.glow-3::after {
+            content: '';
+            position: absolute; inset: -3px;
+            border-radius: 50%;
+            z-index: -1;
+        }
+        .player-avatar.glow-1::after { background: linear-gradient(135deg, #F59E0B, #D97706); }
+        .player-avatar.glow-2::after { background: linear-gradient(135deg, #94a3b8, #64748b); }
+        .player-avatar.glow-3::after { background: linear-gradient(135deg, #CD7F32, #a0522d); }
+        .player-info { flex: 1; min-width: 0; }
+        .player-info .name { font-weight: 700; font-size: 0.95rem; }
+        .player-info .points-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 3px;
+            margin-top: 5px;
+            max-width: 200px;
+            overflow: hidden;
+        }
+        .player-info .points-bar .fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #7D5BFA, #F59E0B);
+            transition: width 0.6s ease;
+        }
+        .player-points {
+            color: #F59E0B;
+            font-weight: 800;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+
+        .view-all { text-align: center; margin: 22px 0; }
+        .view-all a {
+            color: #7D5BFA;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .view-all a:hover { color: #A78BFA; gap: 10px; }
+
+        /* Games Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 10px;
+            margin: 30px 0;
+        }
+        .game-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 14px;
+            padding: 18px 12px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: default;
+        }
+        .game-card:hover {
+            border-color: rgba(125, 91, 250, 0.2);
+            background: rgba(125, 91, 250, 0.05);
+            transform: translateY(-4px);
+        }
+        .game-card .emoji { font-size: 1.8rem; margin-bottom: 6px; }
+        .game-card .cmd { color: #F59E0B; font-weight: 700; font-size: 0.8rem; font-family: monospace; }
+        .game-card .name { color: #555; font-size: 0.75rem; margin-top: 2px; font-weight: 600; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 35px 0;
+            color: #333;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            margin-top: 60px;
+            font-size: 0.85rem;
+        }
+        footer a { color: #555; text-decoration: none; transition: color 0.3s; }
+        footer a:hover { color: #7D5BFA; }
+
+        /* Responsive */
+        @media (max-width: 700px) {
+            .hero h2 { font-size: 2rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+            header { flex-direction: column; text-align: center; }
+            nav { flex-wrap: wrap; justify-content: center; }
+            .btn { padding: 11px 22px; font-size: 0.9rem; }
+            .players-grid { max-width: 100%; }
+            .games-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+        }
+        @media (max-width: 400px) {
+            .hero h2 { font-size: 1.6rem; }
+            .hero { padding: 40px 10px 30px; }
+        }
+
+        /* Animations */
+        .fade-up { opacity: 0; transform: translateY(30px); animation: fadeUp 0.6s ease forwards; }
+        .fade-up:nth-child(2) { animation-delay: 0.1s; }
+        .fade-up:nth-child(3) { animation-delay: 0.2s; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-orb purple"></div>
+<div class="bg-orb gold"></div>
+<div class="bg-orb blue"></div>
+
+<div class="container">
+    <header>
+        <div class="logo">
+            <div class="logo-img"><img src="{{ bot_avatar }}" alt="RG"></div>
+            <h1>Respect Games</h1>
+        </div>
+        <nav>
+            <a href="/" class="active">الرئيسية</a>
+            <a href="/leaderboard">المتصدرين</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-badge">🎮 10 ألعاب مجانية</div>
+        <h2>العب مع <span class="gradient">أصدقائك</span><br>واربح النقاط 🪙</h2>
+        <p>بوت Respect Games يقدّم لك ١٠ ألعاب شيقة. العب مجاناً، اربح نقاط، وتسلّى مع أصحابك في السيرفر!</p>
+        <div class="hero-buttons">
+            <a href="{{ bot_invite }}" target="_blank" class="btn btn-primary">🤖 إضافة البوت</a>
+            <a href="{{ wheel_url }}" target="_blank" class="btn btn-gold">🎰 العجلة الدوارة</a>
+            <a href="/leaderboard" class="btn btn-glass">🏆 المتصدرين</a>
+        </div>
+    </section>
+
+    <div class="stats-grid">
+        <div class="stat-glass fade-up">
+            <div class="icon">👥</div>
+            <div class="value" id="players-count">{{ total_players }}</div>
+            <div class="label">إجمالي اللاعبين</div>
+        </div>
+        <div class="stat-glass fade-up">
+            <div class="icon">🪙</div>
+            <div class="value">{{ "{:,}".format(total_points) }}</div>
+            <div class="label">إجمالي النقاط</div>
+        </div>
+        <div class="stat-glass fade-up">
+            <div class="icon">🎮</div>
+            <div class="value">10</div>
+            <div class="label">ألعاب متاحة</div>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <div class="tag">🏆 TOP 5</div>
+        <h3>أفضل <span>اللاعبين</span></h3>
+        <p>المتصدرين في {{ server_name }}</p>
+    </div>
+
+    {% set max_pts = top[0].get('points', 1) if top else 1 %}
+    <div class="players-grid">
+        {% for p in top %}
+        <div class="player-card fade-up">
+            <div class="player-rank {% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}">
+                {% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% elif loop.index == 3 %}🥉{% else %}{{ loop.index }}.{% endif %}
+            </div>
+            <div class="player-avatar glow-{{ loop.index if loop.index <= 3 else '' }}">
+                <img src="{{ p.get('avatar', default_avatar) }}" alt="" onerror="this.src='{{ default_avatar }}'">
+            </div>
+            <div class="player-info">
+                <div class="name">{{ p.get('name', 'مجهول') }}</div>
+                <div class="points-bar"><div class="fill" style="width: {{ (p.get('points', 0) / max_pts * 100)|int }}%"></div></div>
+            </div>
+            <div class="player-points">🪙 {{ "{:,}".format(p.get('points', 0)) }}</div>
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:40px;color:#444;">
+            <div style="font-size:3rem;margin-bottom:10px;">🏆</div>
+            <p>ما فيه لاعبين بعد! ابدأ العب الآن 🎮</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if top %}
+    <div class="view-all">
+        <a href="/leaderboard">عرض لوحة المتصدرين كاملة ←</a>
+    </div>
+    {% endif %}
+
+    <div class="section-header">
+        <div class="tag">🎮 GAMES</div>
+        <h3>جميع <span>الألعاب</span></h3>
+        <p>استخدم البادئة <code style="background:rgba(125,91,250,0.1);padding:2px 6px;border-radius:4px;color:#7D5BFA;">-</code></p>
+    </div>
+
+    <div class="games-grid">
+        <div class="game-card"><div class="emoji">🎰</div><div class="cmd">-روليت</div><div class="name">روليت روسي</div></div>
+        <div class="game-card"><div class="emoji">🎲</div><div class="cmd">-نرد</div><div class="name">رمي النرد</div></div>
+        <div class="game-card"><div class="emoji">🪨</div><div class="cmd">-rps</div><div class="name">ح. ورقة مقص</div></div>
+        <div class="game-card"><div class="emoji">🎰</div><div class="cmd">-سلوتس</div><div class="name">سلوتس</div></div>
+        <div class="game-card"><div class="emoji">🃏</div><div class="cmd">-بلاكجاك</div><div class="name">بلاك جاك</div></div>
+        <div class="game-card"><div class="emoji">🔢</div><div class="cmd">-تخمين</div><div class="name">تخمين رقم</div></div>
+        <div class="game-card"><div class="emoji">🔀</div><div class="cmd">-ترتيب</div><div class="name">ترتيب كلمات</div></div>
+        <div class="game-card"><div class="emoji">🇸🇦</div><div class="cmd">-أعلام</div><div class="name">أعلام الدول</div></div>
+        <div class="game-card"><div class="emoji">⚡</div><div class="cmd">-أسرع</div><div class="name">أسرع مجيب</div></div>
+        <div class="game-card"><div class="emoji">⭕</div><div class="cmd">-xo</div><div class="name">إكس-أو</div></div>
+    </div>
+
+    <footer>
+        <p>{{ server_name }} &copy; 2026 &bull; <a href="{{ bot_invite }}" target="_blank">إضافة البوت</a> &bull; <a href="{{ wheel_url }}" target="_blank">العجلة الدوارة</a></p>
+    </footer>
+</div>
+</body>
+</html>
