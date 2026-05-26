@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎰 روليت - العجلة الدوارة</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+.container {
+  max-width: 700px;
+  width: 100%;
+  text-align: center;
+}
+h1 {
+  color: #F59E0B;
+  font-size: 2.5em;
+  text-shadow: 0 0 20px rgba(245,158,11,0.3);
+  margin-bottom: 5px;
+}
+h1 span { color: #7D5BFA; }
+.subtitle {
+  color: #a0aec0;
+  font-size: 1.1em;
+  margin-bottom: 20px;
+}
+.wheel-wrapper {
+  position: relative;
+  display: inline-block;
+  margin: 0 auto;
+}
+.needle {
+  position: absolute;
+  top: -25px; left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 40px solid #F59E0B;
+  filter: drop-shadow(0 0 10px rgba(245,158,11,0.7));
+  z-index: 10;
+}
+.needle::after {
+  content: '';
+  position: absolute;
+  top: -48px; left: -10px;
+  width: 20px; height: 20px;
+  background: #F59E0B;
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(245,158,11,0.6);
+}
+.outer-ring {
+  position: absolute;
+  top: -10px; left: -10px;
+  width: 420px; height: 420px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #7D5BFA, #F59E0B, #7D5BFA, #F59E0B, #7D5BFA, #F59E0B);
+  padding: 8px;
+  box-shadow: 0 0 40px rgba(125,91,250,0.4), 0 0 80px rgba(125,91,250,0.2);
+  animation: glow 2s ease-in-out infinite alternate;
+}
+@keyframes glow {
+  from { box-shadow: 0 0 40px rgba(125,91,250,0.4), 0 0 80px rgba(125,91,250,0.2); }
+  to { box-shadow: 0 0 50px rgba(245,158,11,0.4), 0 0 100px rgba(245,158,11,0.2); }
+}
+.inner-circle {
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: #1a1a2e;
+  position: relative;
+  overflow: hidden;
+}
+#wheelCanvas { width: 400px; height: 400px; }
+.center-circle {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #7D5BFA, #5a3fd9);
+  border: 3px solid #F59E0B;
+  box-shadow: 0 0 20px rgba(125,91,250,0.6);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+.controls { margin-top: 25px; }
+.btn-spin {
+  background: linear-gradient(135deg, #7D5BFA, #F59E0B);
+  color: white; border: none;
+  padding: 15px 50px;
+  font-size: 1.3em;
+  font-weight: 700;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: 'Tajawal', sans-serif;
+  transition: all 0.3s;
+  box-shadow: 0 5px 20px rgba(125,91,250,0.4);
+}
+.btn-spin:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(125,91,250,0.6);
+}
+.btn-spin:disabled { opacity: 0.6; cursor: not-allowed; }
+.result-box {
+  margin-top: 15px;
+  padding: 15px 20px;
+  border-radius: 15px;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(245,158,11,0.3);
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.result-box .winner {
+  color: #F59E0B;
+  font-size: 1.5em;
+  font-weight: 700;
+}
+.result-box .winner span { color: #7D5BFA; }
+.result-box .waiting { color: #a0aec0; font-size: 1.1em; }
+.input-section {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.input-section input {
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(125,91,250,0.3);
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-size: 1em;
+  font-family: 'Tajawal', sans-serif;
+  width: 200px;
+  direction: rtl;
+}
+.input-section input::placeholder { color: #718096; }
+.input-section input:focus { outline: none; border-color: #7D5BFA; }
+.btn-small {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 700;
+  transition: all 0.3s;
+  font-size: 0.95em;
+}
+.btn-add { background: #7D5BFA; color: white; }
+.btn-add:hover { background: #6a4fd9; }
+.btn-clear { background: #e74c3c; color: white; }
+.btn-clear:hover { background: #c0392b; }
+.names-list {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  min-height: 30px;
+}
+.name-tag {
+  background: rgba(125,91,250,0.2);
+  border: 1px solid rgba(125,91,250,0.3);
+  padding: 4px 14px;
+  border-radius: 20px;
+  color: #e2e8f0;
+  font-size: 0.85em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.name-tag .remove {
+  cursor: pointer;
+  color: #e74c3c;
+  font-weight: 700;
+  font-size: 1.1em;
+}
+.name-tag .remove:hover { color: #ff6b6b; }
+.name-tag.highlight {
+  background: rgba(245,158,11,0.3);
+  border-color: #F59E0B;
+  color: #F59E0B;
+  font-weight: 700;
+}
+.points-display {
+  color: #a0aec0;
+  margin-top: 10px;
+  font-size: 0.9em;
+}
+.points-display span { color: #F59E0B; font-weight: 700; }
+@keyframes confetti-fall {
+  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+.confetti-piece {
+  position: fixed;
+  width: 10px; height: 10px;
+  top: -10px;
+  animation: confetti-fall 3s ease-in forwards;
+  z-index: 999;
+}
+@media (max-width: 480px) {
+  .outer-ring { width: 310px; height: 310px; top: -8px; left: -8px; padding: 6px; }
+  .inner-circle { width: 290px; height: 290px; }
+  #wheelCanvas { width: 290px; height: 290px; }
+  .center-circle { width: 45px; height: 45px; font-size: 18px; }
+  .needle { top: -20px; border-left-width: 14px; border-right-width: 14px; border-top-width: 30px; }
+  .needle::after { top: -36px; left: -7px; width: 14px; height: 14px; }
+  h1 { font-size: 1.8em; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎰 <span>روليت</span> Respect</h1>
+  <p class="subtitle">العجلة تدور... من هو المختار؟</p>
+
+  <div class="input-section">
+    <input type="text" id="nameInput" placeholder="اكتب اسم عضو..." maxlength="20" dir="auto">
+    <button class="btn-small btn-add" id="addBtn">➕ إضافة</button>
+    <button class="btn-small btn-clear" id="clearBtn">🗑️ مسح الكل</button>
+  </div>
+
+  <div class="names-list" id="namesList"></div>
+
+  <div class="wheel-wrapper">
+    <div class="needle"></div>
+    <div class="outer-ring">
+      <div class="inner-circle">
+        <canvas id="wheelCanvas" width="400" height="400"></canvas>
+        <div class="center-circle">🎯</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn-spin" id="spinBtn">🎰 دير العجلة</button>
+  </div>
+
+  <div class="result-box" id="resultBox">
+    <div class="waiting">➕ أضف أسماء اللاعبين ثم دير العجلة 🎰</div>
+  </div>
+  <div class="points-display" id="pointsDisplay"></div>
+</div>
+
+<script>
+const COLORS = [
+  '#7D5BFA', '#F59E0B', '#2ECC71', '#E74C3C', '#3498DB',
+  '#E67E22', '#1ABC9C', '#9B59B6', '#F1C40F', '#34495E',
+  '#16A085', '#D35400', '#8E44AD', '#27AE60', '#C0392B',
+];
+const TEXT_COLOR = '#ffffff';
+const WHEEL_SIZE = 400;
+const cx = WHEEL_SIZE / 2, cy = WHEEL_SIZE / 2, radius = WHEEL_SIZE / 2 - 10;
+
+const canvas = document.getElementById('wheelCanvas');
+const ctx = canvas.getContext('2d');
+const spinBtn = document.getElementById('spinBtn');
+const resultBox = document.getElementById('resultBox');
+const namesList = document.getElementById('namesList');
+const nameInput = document.getElementById('nameInput');
+const addBtn = document.getElementById('addBtn');
+const clearBtn = document.getElementById('clearBtn');
+const pointsDisplay = document.getElementById('pointsDisplay');
+
+let names = [];
+let currentAngle = 0;
+let isSpinning = false;
+
+function getUrlNames() {
+  const params = new URLSearchParams(window.location.search);
+  const n = params.get('names');
+  if (n) return n.split(',').filter(x => x.trim());
+  return [];
+}
+
+function drawWheel(angle) {
+  ctx.clearRect(0, 0, WHEEL_SIZE, WHEEL_SIZE);
+  const count = names.length;
+  if (count === 0) {
+    ctx.fillStyle = '#2d3748';
+    ctx.beginPath(); ctx.arc(cx, cy, radius, 0, 2*Math.PI); ctx.fill();
+    ctx.fillStyle = '#718096';
+    ctx.font = 'bold 18px Tajawal, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('ما في لاعبين', cx, cy + 6);
+    return;
+  }
+  const slice = (2 * Math.PI) / count;
+  for (let i = 0; i < count; i++) {
+    const startAngle = angle + i * slice;
+    const endAngle = startAngle + slice;
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, startAngle, endAngle);
+    ctx.closePath();
+    ctx.fillStyle = COLORS[i % COLORS.length];
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    const textAngle = startAngle + slice / 2;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(textAngle);
+    ctx.fillStyle = TEXT_COLOR;
+    ctx.font = `bold ${count > 8 ? '11px' : '14px'} Tajawal, sans-serif`;
+    ctx.textAlign = 'right';
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur = 3;
+    const displayName = names[i].length > 8 ? names[i].substring(0, 7) + '..' : names[i];
+    ctx.fillText(displayName, radius - 15, 5);
+    ctx.restore();
+  }
+}
+
+function renderNames() {
+  namesList.innerHTML = '';
+  names.forEach((name, i) => {
+    const tag = document.createElement('span');
+    tag.className = 'name-tag';
+    tag.innerHTML = `${i+1}. ${name} <span class="remove" data-idx="${i}">×</span>`;
+    namesList.appendChild(tag);
+  });
+  document.querySelectorAll('.name-tag .remove').forEach(el => {
+    el.addEventListener('click', () => {
+      const idx = parseInt(el.dataset.ins);
+      names.splice(idx, 1);
+      renderNames();
+      redrawAndUpdate();
+    });
+  });
+  redrawAndUpdate();
+}
+
+function redrawAndUpdate() {
+  drawWheel(currentAngle);
+  if (names.length < 2) {
+    spinBtn.disabled = true;
+    resultBox.innerHTML = '<div class="waiting">➕ أضف على الأقل 2 لاعبين</div>';
+  } else {
+    spinBtn.disabled = false;
+    resultBox.innerHTML = '<div class="waiting">🎰 دير العجلة وشف من يفوز!</div>';
+  }
+  pointsDisplay.innerHTML = `عدد اللاعبين: <span>${names.length}</span> | اقلبها وشف!`;
+}
+
+function spin() {
+  if (isSpinning || names.length < 2) return;
+  isSpinning = true;
+  spinBtn.disabled = true;
+  spinBtn.textContent = '🌀 العجلة تدور...';
+  spinBtn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+  resultBox.innerHTML = '<div class="waiting">🌀 العجلة تدور...</div>';
+
+  const winnerIndex = Math.floor(Math.random() * names.length);
+  const sliceAngle = (2 * Math.PI) / names.length;
+  const targetAngle = (2 * Math.PI) - (winnerIndex * sliceAngle + sliceAngle / 2) + Math.PI / 2;
+  const extraSpins = 5 + Math.floor(Math.random() * 3);
+  const totalRotation = extraSpins * 2 * Math.PI + targetAngle;
+  const startAngle = currentAngle;
+  const endAngle = startAngle + totalRotation;
+  const duration = 4000 + Math.random() * 1000;
+  const startTime = performance.now();
+
+  document.querySelectorAll('.name-tag').forEach(t => t.classList.remove('highlight'));
+
+  function animate(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    currentAngle = startAngle + totalRotation * eased;
+    drawWheel(currentAngle);
+    if (progress < 1) requestAnimationFrame(animate);
+    else {
+      currentAngle = endAngle % (2 * Math.PI);
+      isSpinning = false;
+      spinBtn.textContent = '🎰 دير العجلة';
+      spinBtn.style.background = 'linear-gradient(135deg, #7D5BFA, #F59E0B)';
+      const winner = names[winnerIndex];
+      resultBox.innerHTML = `<div class="winner">🎉 ${winner}!</div>`;
+      const tags = document.querySelectorAll('.name-tag');
+      tags.forEach((t, i) => { if (i === winnerIndex) t.classList.add('highlight'); });
+      spinBtn.disabled = false;
+      launchConfetti();
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+function launchConfetti() {
+  const colors = ['#7D5BFA','#F59E0B','#2ECC71','#E74C3C','#3498DB','#F1C40F'];
+  for (let i = 0; i < 50; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.width = (Math.random() * 8 + 5) + 'px';
+    p.style.height = (Math.random() * 8 + 5) + 'px';
+    p.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+    p.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    p.style.animationDelay = (Math.random() * 0.5) + 's';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 4000);
+  }
+}
+
+nameInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') addName();
+});
+
+function addName() {
+  const name = nameInput.value.trim();
+  if (!name) return;
+  if (names.length >= 15) return alert('❌ الحد الأقصى 15 لاعب!');
+  if (names.includes(name)) return alert('❌ الاسم موجود مسبقاً!');
+  names.push(name);
+  nameInput.value = '';
+  renderNames();
+}
+
+addBtn.addEventListener('click', addName);
+clearBtn.addEventListener('click', () => { if (names.length > 0 && confirm('🔄 مسح كل الأسماء؟')) { names = []; renderNames(); } });
+spinBtn.addEventListener('click', spin);
+
+const urlNames = getUrlNames();
+if (urlNames.length > 0) {
+  names = urlNames.slice(0, 15);
+  renderNames();
+}
+redrawAndUpdate();
+</script>
+</body>
+</html>
